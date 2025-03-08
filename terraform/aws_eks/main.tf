@@ -6,7 +6,6 @@ terraform {
     encrypt = true
   }
 }
-
 provider "aws" {
   region = "us-east-1"
 }
@@ -22,7 +21,7 @@ resource "aws_vpc" "eks_vpc" {
   }
 }
 
-# 2️⃣ Create Public Subnets (For NAT Gateway & Load Balancer)
+# 2️⃣ Public Subnets (For NAT Gateway & Load Balancer)
 resource "aws_subnet" "eks_public_subnet_a" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
@@ -45,7 +44,7 @@ resource "aws_subnet" "eks_public_subnet_b" {
   }
 }
 
-# 3️⃣ Create Private Subnets (For Worker Nodes)
+# 3️⃣ Private Subnets (For Worker Nodes)
 resource "aws_subnet" "eks_private_subnet_a" {
   vpc_id            = aws_vpc.eks_vpc.id
   cidr_block        = "10.0.3.0/24"
@@ -66,7 +65,7 @@ resource "aws_subnet" "eks_private_subnet_b" {
   }
 }
 
-# 4️⃣ Internet Gateway (For Public Subnets)
+# 4️⃣ Internet Gateway
 resource "aws_internet_gateway" "eks_igw" {
   vpc_id = aws_vpc.eks_vpc.id
 
@@ -87,6 +86,8 @@ resource "aws_nat_gateway" "eks_nat" {
   tags = {
     Name = "eks-nat-gateway"
   }
+
+  depends_on = [aws_internet_gateway.eks_igw]  # NAT depends on IGW
 }
 
 # 6️⃣ Route Tables
@@ -130,12 +131,11 @@ resource "aws_route_table_association" "private_b" {
   route_table_id = aws_route_table.eks_private_rt.id
 }
 
-# 7️⃣ Security Group for EKS Cluster
+# 7️⃣ EKS Security Group (Allow EKS Control Plane Traffic)
 resource "aws_security_group" "eks_sg" {
   vpc_id = aws_vpc.eks_vpc.id
   name   = "eks-security-group"
 
-  # Allow worker nodes to communicate with EKS API
   ingress {
     from_port   = 443
     to_port     = 443
@@ -143,7 +143,6 @@ resource "aws_security_group" "eks_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow all outbound traffic
   egress {
     from_port   = 0
     to_port     = 0
@@ -189,7 +188,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     ]
   }
 
-  depends_on = [aws_iam_role_policy_attachment.eks_cluster_role_policy]
+  depends_on = [aws_iam_role_policy_attachment.eks_cluster_role_policy, aws_nat_gateway.eks_nat]
 }
 
 # 🔟 IAM Role for Worker Nodes
@@ -208,9 +207,20 @@ resource "aws_iam_role" "eks_worker_role" {
   })
 }
 
+# Attach all necessary policies to Worker Nodes
 resource "aws_iam_role_policy_attachment" "worker_node_policy" {
   role       = aws_iam_role.eks_worker_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_cni_policy" {
+  role       = aws_iam_role.eks_worker_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy_attachment" "worker_registry_policy" {
+  role       = aws_iam_role.eks_worker_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 # 🔟 Worker Nodes in Private Subnets
@@ -232,6 +242,9 @@ resource "aws_eks_node_group" "eks_workers" {
   instance_types = ["t3.medium"]
 
   depends_on = [
-    aws_iam_role_policy_attachment.worker_node_policy
+    aws_iam_role_policy_attachment.worker_node_policy,
+    aws_iam_role_policy_attachment.worker_cni_policy,
+    aws_iam_role_policy_attachment.worker_registry_policy,
+    aws_nat_gateway.eks_nat
   ]
 }
