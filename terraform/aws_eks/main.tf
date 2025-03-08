@@ -87,7 +87,7 @@ resource "aws_nat_gateway" "eks_nat" {
     Name = "eks-nat-gateway"
   }
 
-  depends_on = [aws_internet_gateway.eks_igw]  # NAT depends on IGW
+  depends_on = [aws_internet_gateway.eks_igw] # NAT depends on IGW
 }
 
 # 6️⃣ Route Tables
