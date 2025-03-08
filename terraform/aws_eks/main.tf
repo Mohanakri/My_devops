@@ -12,9 +12,6 @@ provider "aws" {
 }
 
 
-provider "aws" {
-  region = "us-east-1"
-}
 
 # IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_role" {
