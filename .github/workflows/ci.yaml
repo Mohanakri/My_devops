@@ -5,49 +5,49 @@ on:
     branches:
       - aws_terraform_eks
     paths:
-      #- "terraform/aws_s3_backend/**"
+      - "terraform/aws_s3_backend/**"
       - "terraform/aws_eks/**"
 
 jobs:
-  s3_backend:
-    name: Deploy S3 Backend
-    runs-on: ubuntu-latest
-    env:
-      AWS_REGION: "us-east-1"
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  # s3_backend:
+  #   name: Deploy S3 Backend
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     AWS_REGION: "us-east-1"
+  #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v4
 
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: latest
+  #     - name: Install Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_version: latest
 
-      - name: Terraform Format
-        run: terraform fmt -check
-        working-directory: terraform/aws_s3_backend
+  #     - name: Terraform Format
+  #       run: terraform fmt -check
+  #       working-directory: terraform/aws_s3_backend
 
-      - name: Terraform Init
-        run: terraform init
-        working-directory: terraform/aws_s3_backend
+  #     - name: Terraform Init
+  #       run: terraform init
+  #       working-directory: terraform/aws_s3_backend
 
-      - name: Terraform Validate
-        run: terraform validate
-        working-directory: terraform/aws_s3_backend
+  #     - name: Terraform Validate
+  #       run: terraform validate
+  #       working-directory: terraform/aws_s3_backend
 
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan
-        working-directory: terraform/aws_s3_backend
+  #     - name: Terraform Plan
+  #       run: terraform plan -out=tfplan
+  #       working-directory: terraform/aws_s3_backend
 
-      - name: Terraform Apply (S3 Backend)
-        run: terraform apply -auto-approve tfplan
-        working-directory: terraform/aws_s3_backend
+  #     - name: Terraform Apply (S3 Backend)
+  #       run: terraform apply -auto-approve tfplan
+  #       working-directory: terraform/aws_s3_backend
 
   eks_cluster:
-    name: Deploy EKS Cluster
+    #name: Deploy EKS Cluster
     runs-on: ubuntu-latest
     needs: s3_backend  # Ensures eks_cluster runs after s3_backend
     environment: production  # Triggers manual approval before running
