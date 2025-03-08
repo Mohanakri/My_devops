@@ -5,7 +5,7 @@ on:
     branches:
       - aws_terraform_eks
     paths:
-      - "terraform/aws_eks/**"
+      #- "terraform/aws_eks/**"
       - "terraform/aws_s3_backend/**"
 
 #   pull_request:
