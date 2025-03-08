@@ -19,8 +19,8 @@ provider "aws" {
 
 # Create a VPC
 resource "aws_vpc" "eks_vpc" {
-  cidr_block = "10.0.0.0/16"
-  enable_dns_support = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
     Name = "eks-vpc"
@@ -102,7 +102,7 @@ resource "aws_security_group" "eks_sg" {
 # IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_cluster_role" {
   name = "eks-cluster-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
