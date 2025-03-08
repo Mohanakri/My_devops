@@ -200,21 +200,21 @@ resource "aws_eks_node_group" "eks_workers" {
 resource "null_resource" "update_auth_configmap" {
   provisioner "local-exec" {
     command = <<EOT
-    aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
-    cat <<EOF | kubectl apply -f -
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: aws-auth
-      namespace: kube-system
-    data:
-      mapRoles: |
-        - rolearn: ${aws_iam_role.eks_worker_role.arn}
-          username: system:node:aws-worker
-          groups:
-            - system:bootstrappers
-            - system:nodes
-    EOF
+      aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
+      echo '
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: aws-auth
+        namespace: kube-system
+      data:
+        mapRoles: |
+          - rolearn: ${aws_iam_role.eks_worker_role.arn}
+            username: system:node:aws-worker
+            groups:
+              - system:bootstrappers
+              - system:nodes
+      ' | kubectl apply -f -
     EOT
   }
 
