@@ -8,10 +8,7 @@ on:
       #- "terraform/aws_eks/**"
       - "terraform/aws_s3_backend/**"
 
-#   pull_request:
-#     branches:
-#       - main
-##
+
 jobs:
   terraform:
     name: Terraform Workflow
