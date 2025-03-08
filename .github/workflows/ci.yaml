@@ -55,6 +55,11 @@ jobs:
       AWS_REGION: "us-east-1"
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/eks_cluster
 
     steps:
       - name: Checkout Repository
@@ -67,19 +72,19 @@ jobs:
 
       - name: Terraform Format
         run: terraform fmt -check
-        working-directory: terraform/aws_eks
+
 
       - name: Terraform Init
         run: terraform init
-        working-directory: terraform/aws_eks
+
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: terraform/aws_eks
+
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-        working-directory: terraform/aws_eks
+
 
       - name: Terraform Apply (EKS Cluster)
         run: terraform apply -auto-approve 
