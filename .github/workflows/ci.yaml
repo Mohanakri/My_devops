@@ -88,6 +88,8 @@ jobs:
 
 
       - name: Terraform Apply (EKS Cluster)
-        run: terraform apply -auto-approve 
+        run: |
+          terraform destroy -target aws_eks_node_group.eks_workers
+          terraform apply -auto-approve 
         #run: terraform destroy -auto-approve 
         working-directory: terraform/aws_eks
