@@ -45,7 +45,7 @@ resource "aws_s3_bucket_public_access_block" "terraform_state" {
   restrict_public_buckets = true
 }
 
-### Create DynamoDB table for state locking
+#### Create DynamoDB table for state locking
 resource "aws_dynamodb_table" "terraform_lock" {
   name         = "terraform-lock"
   billing_mode = "PAY_PER_REQUEST"
