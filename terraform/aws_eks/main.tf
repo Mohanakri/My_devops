@@ -9,12 +9,6 @@ terraform {
 ##
 provider "aws" {
   region = "us-east-1"
-  
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 0cc2df5d9fe3248e257f62b71ea4356bbe5cca24
 }
 
 
