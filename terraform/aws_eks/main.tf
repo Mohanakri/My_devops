@@ -6,7 +6,6 @@ terraform {
     encrypt = true
   }
 }
-
 provider "aws" {
   region = "us-east-1"
 }
@@ -21,28 +20,47 @@ resource "aws_vpc" "eks_vpc" {
   }
 }
 
-# Create Public Subnets
-resource "aws_subnet" "eks_subnet_a" {
+# Create Public Subnets (Only for Load Balancers)
+resource "aws_subnet" "public_subnet_a" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
   tags = {
-    Name = "eks-subnet-a"
+    Name = "public-subnet-a"
   }
 }
 
-resource "aws_subnet" "eks_subnet_b" {
+resource "aws_subnet" "public_subnet_b" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
   tags = {
-    Name = "eks-subnet-b"
+    Name = "public-subnet-b"
   }
 }
 
-# Create Internet Gateway
+# Create Private Subnets (For Worker Nodes)
+resource "aws_subnet" "private_subnet_a" {
+  vpc_id            = aws_vpc.eks_vpc.id
+  cidr_block        = "10.0.3.0/24"
+  availability_zone = "us-east-1a"
+  tags = {
+    Name = "private-subnet-a"
+  }
+}
+
+resource "aws_subnet" "private_subnet_b" {
+  vpc_id            = aws_vpc.eks_vpc.id
+  cidr_block        = "10.0.4.0/24"
+  availability_zone = "us-east-1b"
+  tags = {
+    Name = "private-subnet-b"
+  }
+}
+
+# Create Internet Gateway (For Public Subnets)
 resource "aws_internet_gateway" "eks_igw" {
   vpc_id = aws_vpc.eks_vpc.id
   tags = {
@@ -50,30 +68,65 @@ resource "aws_internet_gateway" "eks_igw" {
   }
 }
 
-# Create Route Table
-resource "aws_route_table" "eks_route_table" {
-  vpc_id = aws_vpc.eks_vpc.id
+# Create NAT Gateway (For Private Worker Nodes)
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.public_subnet_a.id
   tags = {
-    Name = "eks-route-table"
+    Name = "eks-nat-gateway"
   }
 }
 
-# Add Internet Route to Route Table ✅
-resource "aws_route" "eks_internet_route" {
-  route_table_id         = aws_route_table.eks_route_table.id
+# Create Route Table for Public Subnets
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.eks_vpc.id
+  tags = {
+    Name = "public-route-table"
+  }
+}
+
+resource "aws_route" "public_internet_route" {
+  route_table_id         = aws_route_table.public_rt.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.eks_igw.id
 }
 
-# Associate Route Table with Public Subnets
-resource "aws_route_table_association" "a" {
-  subnet_id      = aws_subnet.eks_subnet_a.id
-  route_table_id = aws_route_table.eks_route_table.id
+resource "aws_route_table_association" "public_a" {
+  subnet_id      = aws_subnet.public_subnet_a.id
+  route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_route_table_association" "b" {
-  subnet_id      = aws_subnet.eks_subnet_b.id
-  route_table_id = aws_route_table.eks_route_table.id
+resource "aws_route_table_association" "public_b" {
+  subnet_id      = aws_subnet.public_subnet_b.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+# Create Route Table for Private Subnets (With NAT Gateway)
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.eks_vpc.id
+  tags = {
+    Name = "private-route-table"
+  }
+}
+
+resource "aws_route" "private_nat_route" {
+  route_table_id         = aws_route_table.private_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gw.id
+}
+
+resource "aws_route_table_association" "private_a" {
+  subnet_id      = aws_subnet.private_subnet_a.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+resource "aws_route_table_association" "private_b" {
+  subnet_id      = aws_subnet.private_subnet_b.id
+  route_table_id = aws_route_table.private_rt.id
 }
 
 # Security Group for EKS Cluster
@@ -81,7 +134,7 @@ resource "aws_security_group" "eks_sg" {
   vpc_id = aws_vpc.eks_vpc.id
   name   = "eks-security-group"
 
-  # Allow worker nodes to communicate with EKS API ✅
+  # Allow worker nodes to communicate with EKS API
   ingress {
     from_port   = 443
     to_port     = 443
@@ -102,83 +155,29 @@ resource "aws_security_group" "eks_sg" {
   }
 }
 
-# IAM Role for EKS Cluster
-resource "aws_iam_role" "eks_cluster_role" {
-  name = "eks-cluster-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "eks.amazonaws.com"
-      }
-    }]
-  })
-}
-
-# Attach Policies to EKS Cluster Role
-resource "aws_iam_role_policy_attachment" "eks_cluster_role_policy" {
-  role       = aws_iam_role.eks_cluster_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-}
-
-# Create EKS Cluster
+# Create EKS Cluster (Using Private and Public Subnets)
 resource "aws_eks_cluster" "eks_cluster" {
   name     = "my-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
-    subnet_ids = [aws_subnet.eks_subnet_a.id, aws_subnet.eks_subnet_b.id]
+    subnet_ids = [
+      aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id,
+      aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id
+    ]
+    endpoint_private_access = true
+    endpoint_public_access  = true
   }
 
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_role_policy]
 }
 
-# IAM Role for Worker Nodes
-resource "aws_iam_role" "eks_worker_role" {
-  name = "eks-worker-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "ec2.amazonaws.com"
-      }
-    }]
-  })
-}
-
-# Attach Policies to Worker Nodes
-resource "aws_iam_role_policy_attachment" "worker_node_policy" {
-  role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "worker_cni_policy" {
-  role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-}
-
-resource "aws_iam_role_policy_attachment" "worker_registry_policy" {
-  role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-resource "aws_iam_role_policy_attachment" "worker_autoscale" {
-  role       = aws_iam_role.eks_worker_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AutoScalingFullAccess"
-}
-
-# Create Worker Nodes (EKS Managed Node Group)
+# Create EKS Managed Node Group (Workers in Private Subnets)
 resource "aws_eks_node_group" "eks_workers" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "eks-node-group"
   node_role_arn   = aws_iam_role.eks_worker_role.arn
-  subnet_ids      = [aws_subnet.eks_subnet_a.id, aws_subnet.eks_subnet_b.id]
+  subnet_ids      = [aws_subnet.private_subnet_a.id, aws_subnet.private_subnet_b.id] # ✅ Workers in Private Subnets
 
   scaling_config {
     desired_size = 2
@@ -196,7 +195,7 @@ resource "aws_eks_node_group" "eks_workers" {
   ]
 }
 
-# Add Worker Nodes to EKS `aws-auth` ConfigMap ✅
+# Add Worker Nodes to EKS `aws-auth` ConfigMap
 resource "null_resource" "update_auth_configmap" {
   provisioner "local-exec" {
     command = <<EOT
