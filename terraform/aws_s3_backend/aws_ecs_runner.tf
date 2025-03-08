@@ -12,9 +12,9 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
+      Effect    = "Allow"
       Principal = { Service = "ecs-tasks.amazonaws.com" }
-      Action = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 resource "aws_security_group" "ecs_security_group" {
   name        = "ecs_security_group"
   description = "Allow inbound traffic for GitHub runner"
- #vpc_id      = "your-vpc-id"  # Replace with your VPC ID
+  #vpc_id      = "your-vpc-id"  # Replace with your VPC ID
 
   ingress {
     from_port   = 22
