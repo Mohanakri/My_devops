@@ -201,7 +201,7 @@ resource "null_resource" "update_auth_configmap" {
   provisioner "local-exec" {
     command = <<EOT
     aws eks update-kubeconfig --name my-eks-cluster --region us-east-1
-    kubectl apply -f - <<EOF
+    cat <<EOF | kubectl apply -f -
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -210,7 +210,7 @@ resource "null_resource" "update_auth_configmap" {
     data:
       mapRoles: |
         - rolearn: ${aws_iam_role.eks_worker_role.arn}
-          username: system:node:{{EC2PrivateDNSName}}
+          username: system:node:aws-worker
           groups:
             - system:bootstrappers
             - system:nodes
