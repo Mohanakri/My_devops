@@ -59,7 +59,8 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: terraform/eks_cluster
+        working-directory: terraform/aws_eks
+
 
     steps:
       - name: Checkout Repository
