@@ -26,7 +26,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "delete_versions" {
   }
 }
 
-#### Enable versioning on S3 bucket
+### Enable versioning on S3 bucket
 resource "aws_s3_bucket_versioning" "terraform_state_versioning" {
   bucket = aws_s3_bucket.terraform_state.id
 

@@ -82,6 +82,6 @@ jobs:
         working-directory: terraform/aws_eks
 
       - name: Terraform Apply (EKS Cluster)
-        #run: terraform apply -auto-approve tfplan
-        run: terraform destroy -auto-approve 
+        run: terraform apply -auto-approve 
+        #run: terraform destroy -auto-approve 
         working-directory: terraform/aws_eks
