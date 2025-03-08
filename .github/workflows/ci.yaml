@@ -47,9 +47,9 @@ jobs:
   #       working-directory: terraform/aws_s3_backend
 
   eks_cluster:
-    #name: Deploy EKS Cluster
+    name: Deploy EKS Cluster
     runs-on: ubuntu-latest
-    needs: s3_backend  # Ensures eks_cluster runs after s3_backend
+    #needs: s3_backend  # Ensures eks_cluster runs after s3_backend
     environment: production  # Triggers manual approval before running
     env:
       AWS_REGION: "us-east-1"
