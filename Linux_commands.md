@@ -135,8 +135,153 @@
 - `systemctl status <service>` – Check service status
 
 ...
+## 10. System Services and Daemon Management
 
-More sections include Scheduling Tasks, File Permissions and Security, System Backup, Diagnostics, Networking & Remote Management, Text Processing Utilities, System Shutdown & Reboot, File System Management, Filesystem Permissions, Containerization (Docker & Kubernetes), and Helm.
+### systemctl – Control the systemd system and service manager
+- `systemctl start <service>` – Start a service
+- `systemctl stop <service>` – Stop a service
+- `systemctl restart <service>` – Restart a service
+- `systemctl enable <service>` – Enable a service to start on boot
+- `systemctl disable <service>` – Disable a service from starting on boot
+- `systemctl status <service>` – Check service status
 
-For the full list, refer to the full documentation above.
+### service – Older service management command (used in non-systemd systems)
+- `service <service> start` – Start a service
+- `service <service> stop` – Stop a service
+- `service <service> restart` – Restart a service
+- `service <service> status` – Check service status
+
+## 11. Scheduling Tasks
+
+### cron – Daemon for running scheduled commands
+- `crontab -e` – Edit cron jobs for the current user
+- `crontab -l` – List the current user’s cron jobs
+- `crontab -r` – Remove the current user's cron jobs
+
+### at – Run commands at a specified time
+- `at 09:00` – Schedule a command to run at 09:00 AM
+
+### batch – Run commands when the system load is low
+
+### sleep – Delay for a specified time
+- `sleep 5s` – Sleep for 5 seconds
+
+## 12. File Permissions and Security
+- `chmod` – Change file permissions
+- `chown` – Change file owner and group
+- `chgrp` – Change the group ownership of a file
+- `umask` – Set default permissions for new files
+- `setfacl` – Set file access control lists (ACL)
+- `getfacl` – Get file access control lists (ACL)
+- `sudo` – Execute a command as another user (usually root)
+- `visudo` – Edit the sudoers file safely
+- `passwd` – Change a user’s password
+- `sudoers` – Manage sudo access for users
+- `gpasswd` – Administer group password
+- `ss` – Display socket statistics (for secure network connections)
+
+## 13. System Backup and Restore
+
+### rsync – Remote file and directory synchronization
+- `rsync -avz source/ destination/` – Synchronize files
+- `rsync -avz -e ssh source/ user@remote:/destination/` – Sync over SSH
+
+### cpio – Copy files to and from archives
+
+### dd – Low-level copying and backup of entire filesystems
+- `dd if=/dev/sda of=/path/to/backup.img` – Backup a disk/partition
+- `dd if=/path/to/backup.img of=/dev/sda` – Restore a disk/partition
+
+## 14. System Diagnostics and Troubleshooting
+- `dmesg` – Print the kernel ring buffer messages (system boot and hardware-related messages)
+- `journalctl` – Query and view logs from systemd’s journal
+- `strace <command>` – Trace a command’s system calls
+- `lsof <file>` – Show processes using a specific file
+- `vmstat` – Report virtual memory statistics
+- `iostat` – Report CPU and I/O statistics
+- `mpstat` – Report CPU usage statistics
+- `pidstat` – Report statistics by process
+- `free` – Display memory usage
+- `uptime` – How long the system has been running
+- `watch -n 1 free` – Watch memory usage every second
+- `lshw` – List hardware configuration
+- `htop` – Interactive process viewer (better than top)
+- `netstat` – Network statistics (deprecated in favor of ss)
+- `ss` – Show socket statistics (more efficient than netstat)
+
+## 15. Networking & Remote Management
+
+### ip – A more modern alternative for managing network interfaces and routing
+- `ip addr` – Show IP addresses
+- `ip link` – Show or manipulate network interfaces
+- `ip route` – Show or manipulate routing tables
+
+### ss – Display socket statistics (useful for diagnosing network issues)
+
+### nmap – Network exploration tool (can be used for security auditing)
+
+### telnet – User interface to the TELNET protocol (less common nowadays)
+
+### nc (Netcat) – Network utility for reading and writing from network connections
+- `nc -l -p 1234` – Listen on port 1234
+- `nc <host> <port>` – Connect to a host and port
+
+### iptables – Administration tool for IPv4 packet filtering and NAT (Network Address Translation)
+
+### firewalld – Frontend for managing firewall rules (used in some distros like Fedora and CentOS)
+
+### ufw – Uncomplicated firewall (front-end for iptables)
+- `ufw enable` – Enable firewall
+- `ufw allow <port>` – Allow traffic on a specific port
+
+### tcpdump – Command-line packet analyzer
+
+### curl – Transfer data from or to a server using various protocols (HTTP, FTP, etc.)
+
+### wget – Download files from the web via HTTP, HTTPS, FTP
+
+### scp – Secure copy over SSH (used to copy files between systems)
+- `scp file.txt user@remote:/path/to/destination/` – Copy file to remote server
+
+### rsync – Remote file and directory synchronization (often used for backups)
+- `rsync -avz /local/path/ remote:/remote/path/` – Sync directories
+
+## 16. Text Processing Utilities
+- `grep 'pattern' file.txt` – Search for a pattern in a file
+- `grep -r 'pattern' /dir/` – Recursively search for a pattern
+- `sed 's/old/new/g' file.txt` – Replace old with new globally
+- `awk '{print $1}' file.txt` – Print the first column of each line in a file
+- `cut -d ':' -f 1 /etc/passwd` – Print the first field of each line, delimited by ':'
+- `sort file.txt` – Sort file content in ascending order
+- `sort file.txt | uniq` – Sort and remove duplicate lines
+- `echo "text" | tee file.txt` – Write to file and show output on screen
+- `echo "hello" | tr 'a-z' 'A-Z'` – Convert lowercase to uppercase
+- `paste file1.txt file2.txt` – Combine lines of file1 and file2 side by side
+- `wc -l file.txt` – Count lines in a file
+- `wc -w file.txt` – Count words in a file
+
+## 17. System Shutdown and Reboot
+- `shutdown -h now` – Immediately shut down
+- `shutdown -r now` – Reboot the system
+- `shutdown -h +10` – Shut down after 10 minutes
+- `reboot` – Reboot the system
+- `halt` – Halt the system immediately (equivalent to turning off power)
+- `poweroff` – Power off the system
+- `init 0` – Shutdown
+- `init 6` – Reboot
+
+## 18. File System Mounting and Management
+- `mount /dev/sda1 /mnt` – Mount partition to a directory
+- `umount /mnt` – Unmount the file system mounted at /mnt
+- `/etc/fstab` – View and configure persistent mount points
+- `blkid` – Display block device attributes
+- `fsck /dev/sda1` – Check and repair /dev/sda1
+
+## 19. Filesystem Permissions and Security
+- `chmod 755 file.txt` – Give read, write, and execute permissions to owner, and read-execute permissions to others
+- `chown user:group file.txt` – Change owner and group of a file
+- `chgrp group file.txt` – Change the group of a file
+- `umask 022` – Set default permissions for newly created files to 755
+- `setfacl` – Set access control lists (ACL) for file permissions
+- `getfacl` – Get access control lists (ACL) for file permissions
 
