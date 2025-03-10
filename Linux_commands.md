@@ -120,4 +120,148 @@ Displays details like file size, permissions, modification time, etc.
 
 ---
 
+
+Here’s an example for each **File Viewing and Editing** command:  
+
+### ✅ **`cat` – Concatenate and display file content**  
+```bash
+cat file.txt
+```
+Displays the content of `file.txt`.  
+
+---
+
+### ✅ **`tac` – Concatenate and display file content in reverse**  
+```bash
+tac file.txt
+```
+Displays the content of `file.txt` in reverse order (last line first).  
+
+---
+
+### ✅ **`more` – View file content interactively (page by page)**  
+```bash
+more file.txt
+```
+Displays `file.txt` one page at a time (press `SPACE` to scroll, `q` to quit).  
+
+---
+
+### ✅ **`less` – View file content interactively (scrollable)**  
+```bash
+less file.txt
+```
+Allows scrolling up and down through `file.txt` (`q` to quit).  
+
+---
+
+### ✅ **`head` – Output the first part of a file**  
+```bash
+head -5 file.txt
+```
+Displays the first 5 lines of `file.txt`.  
+
+---
+
+### ✅ **`tail` – Output the last part of a file**  
+```bash
+tail -5 file.txt
+```
+Displays the last 5 lines of `file.txt`.  
+
+```bash
+tail -f log.txt
+```
+Continuously shows new lines added to `log.txt` (useful for monitoring logs).  
+
+---
+
+### ✅ **`nano` – Text editor (terminal-based)**  
+```bash
+nano file.txt
+```
+Opens `file.txt` in the `nano` text editor (use `CTRL+X` to exit, `Y` to save).  
+
+---
+
+### ✅ **`vim` / `vi` – Advanced text editors**  
+```bash
+vim file.txt
+```
+Opens `file.txt` in `vim`. Press `i` to insert, `ESC` to exit insert mode, `:wq` to save and quit.  
+
+---
+
+### ✅ **`emacs` – Text editor**  
+```bash
+emacs file.txt
+```
+Opens `file.txt` in `emacs` (GUI-based editor).  
+
+---
+
+### ✅ **`grep` – Search text using patterns**  
+```bash
+grep "error" logfile.txt
+```
+Finds all lines containing `"error"` in `logfile.txt`.  
+
+```bash
+grep -i "warning" logfile.txt
+```
+Case-insensitive search for `"warning"`.  
+
+---
+
+### ✅ **`sed` – Stream editor for filtering and transforming text**  
+```bash
+sed 's/error/fix/g' logfile.txt
+```
+Replaces all occurrences of `"error"` with `"fix"` in `logfile.txt`.  
+
+---
+
+### ✅ **`awk` – Pattern scanning and processing language**  
+```bash
+awk '{print $1, $3}' data.txt
+```
+Extracts and prints the **1st and 3rd** columns from `data.txt`.  
+
+---
+
+### ✅ **`cut` – Remove sections from each line of files**  
+```bash
+cut -d',' -f2 data.csv
+```
+Extracts the **2nd column** from `data.csv`, assuming comma-separated values.  
+
+---
+
+### ✅ **`sort` – Sort lines of text files**  
+```bash
+sort names.txt
+```
+Sorts `names.txt` in ascending order.  
+
+```bash
+sort -r names.txt
+```
+Sorts `names.txt` in descending order.  
+
+---
+
+### ✅ **`uniq` – Report or omit repeated lines**  
+```bash
+uniq sorted.txt
+```
+Removes duplicate lines from `sorted.txt` (file must be sorted first).  
+
+```bash
+sort file.txt | uniq -c
+```
+Counts occurrences of unique lines in `file.txt`.  
+
+---
+
+Let me know if you need more details! 🚀
 Let me know if you need more details! 🚀
