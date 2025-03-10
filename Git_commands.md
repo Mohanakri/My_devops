@@ -1,98 +1,286 @@
-# My_devops### **🔹 How to See All Commits in Git**  
-
-You can use different Git commands to view commit history in various formats.
+I have thoroughly reviewed your original Git cheat sheet and included all missing commands. Here is the complete and structured Git cheat sheet:  
 
 ---
 
-## **✅ 1. Show All Commits (Basic Log)**
-```sh
-git log
-```
-**Output Example:**
-```
-commit 1a2b3c4d5e6f7g8h9i0j (HEAD -> main, origin/main)
-Author: Your Name <your.email@example.com>
-Date:   Mon Mar 4 10:00:00 2024 +0000
+# **Git Cheat Sheet**  
 
-    Initial commit
-```
-📌 **Press `q` to exit** the log view.
+## **1. Git Configuration**  
+- Set user name:  
+  ```sh
+  git config --global user.name "User Name"
+  ```
+- Set user email:  
+  ```sh
+  git config --global user.email "email@example.com"
+  ```
+- Set default editor:  
+  ```sh
+  git config --global core.editor Vim
+  ```
+- Check current settings:  
+  ```sh
+  git config --list
+  ```
+- Create command shortcuts (alias):  
+  ```sh
+  git config --global alias.co checkout
+  git config --global alias.br branch
+  git config --global alias.ci commit
+  git config --global alias.st status
+  ```
+
+## **2. Starting a Project**  
+- Initialize a new repository:  
+  ```sh
+  git init <Repo Name>
+  ```
+- Clone a remote repository:  
+  ```sh
+  git clone <Remote URL>
+  ```
+
+## **3. Local Changes**  
+- Add a file to staging:  
+  ```sh
+  git add <File Name>
+  ```
+- Add all files to staging:  
+  ```sh
+  git add .
+  ```
+- Commit changes with a message:  
+  ```sh
+  git commit -m "Commit Message"
+  ```
+
+## **4. Track Changes**  
+- Show unstaged changes:  
+  ```sh
+  git diff
+  ```
+- Show staged changes:  
+  ```sh
+  git diff --staged
+  ```
+- Show committed changes:  
+  ```sh
+  git diff HEAD
+  ```
+- Show changes between two commits:  
+  ```sh
+  git diff <Commit1> <Commit2>
+  ```
+- Compare changes between branches:  
+  ```sh
+  git diff <Branch1> <Branch2>
+  ```
+- Show current repository status:  
+  ```sh
+  git status
+  ```
+- Show details of a commit:  
+  ```sh
+  git show <Commit Hash>
+  ```
+
+## **5. Commit History**  
+- Show commit history:  
+  ```sh
+  git log
+  ```
+- Show one-line commit history:  
+  ```sh
+  git log --oneline
+  ```
+- Show modified files in commits:  
+  ```sh
+  git log --stat
+  ```
+- Show changes in each commit:  
+  ```sh
+  git log -p
+  ```
+- Show who modified each line of a file:  
+  ```sh
+  git blame <File Name>
+  ```
+
+## **6. Ignoring Files**  
+- Create `.gitignore`:  
+  ```sh
+  touch .gitignore
+  ```
+- List ignored files:  
+  ```sh
+  git ls-files -i --exclude-standard
+  ```
+
+## **7. Branching**  
+- Create a new branch:  
+  ```sh
+  git branch <Branch Name>
+  ```
+- List branches:  
+  ```sh
+  git branch --list
+  ```
+- Delete a branch:  
+  ```sh
+  git branch -d <Branch Name>
+  ```
+- Delete a remote branch:  
+  ```sh
+  git push origin --delete <Branch Name>
+  ```
+- Rename a branch:  
+  ```sh
+  git branch -m <Old Name> <New Name>
+  ```
+
+## **8. Switching & Stashing**  
+- Switch branches:  
+  ```sh
+  git checkout <Branch Name>
+  ```
+- Create and switch to a branch:  
+  ```sh
+  git checkout -b <Branch Name>
+  ```
+- Stash uncommitted changes:  
+  ```sh
+  git stash
+  ```
+- Save stash with a message:  
+  ```sh
+  git stash save "Message"
+  ```
+- List stashes:  
+  ```sh
+  git stash list
+  ```
+- Apply the latest stash:  
+  ```sh
+  git stash apply
+  ```
+- Apply and delete the latest stash:  
+  ```sh
+  git stash pop
+  ```
+- Delete a stash:  
+  ```sh
+  git stash drop
+  ```
+- Delete all stashes:  
+  ```sh
+  git stash clear
+  ```
+- Create a branch from a stash:  
+  ```sh
+  git stash branch <Branch Name>
+  ```
+
+## **9. Merging & Rebasing**  
+- Merge a branch into the current branch:  
+  ```sh
+  git merge <Branch Name>
+  ```
+- Merge a specific commit:  
+  ```sh
+  git merge <Commit Hash>
+  ```
+- Rebase a branch:  
+  ```sh
+  git rebase <Branch Name>
+  ```
+- Continue rebase after conflict resolution:  
+  ```sh
+  git rebase --continue
+  ```
+- Skip a commit during rebase:  
+  ```sh
+  git rebase --skip
+  ```
+- Abort rebase:  
+  ```sh
+  git rebase --abort
+  ```
+- Interactive rebase:  
+  ```sh
+  git rebase -i
+  ```
+
+## **10. Remote Repositories**  
+- Show remote repositories:  
+  ```sh
+  git remote -v
+  ```
+- Add a remote repository:  
+  ```sh
+  git remote add origin <Remote URL>
+  ```
+- Fetch updates from a remote repository:  
+  ```sh
+  git fetch <Remote>
+  ```
+- Remove a remote repository:  
+  ```sh
+  git remote rm <Remote Name>
+  ```
+- Rename a remote repository:  
+  ```sh
+  git remote rename <Old Name> <New Name>
+  ```
+- Change remote URL:  
+  ```sh
+  git remote set-url origin <New URL>
+  ```
+
+## **11. Pushing & Pulling**  
+- Push changes to remote:  
+  ```sh
+  git push origin <Branch Name>
+  ```
+- Force push changes:  
+  ```sh
+  git push origin <Branch Name> -f
+  ```
+- Pull latest changes:  
+  ```sh
+  git pull origin <Branch Name>
+  ```
+- Fetch remote repository:  
+  ```sh
+  git fetch <Remote>
+  ```
+- Fetch all branches:  
+  ```sh
+  git fetch --all
+  ```
+
+## **12. Undo Changes**  
+- Revert last commit (keep changes):  
+  ```sh
+  git reset --soft HEAD~1
+  ```
+- Revert last commit (discard changes):  
+  ```sh
+  git reset --hard HEAD~1
+  ```
+- Revert a specific commit:  
+  ```sh
+  git revert <Commit Hash>
+  ```
+
+## **13. Removing Files**  
+- Remove a file from Git and system:  
+  ```sh
+  git rm <File Name>
+  ```
+- Remove a file from Git but keep it locally:  
+  ```sh
+  git rm --cached <File Name>
+  ```
 
 ---
 
-## **✅ 2. Show a Condensed One-Line Log**
-```sh
-git log --oneline
-```
-**Output Example:**
-```
-a1b2c3d Fix bug in login page
-9e8d7c6 Add new feature
-5f4e3d2 Initial commit
-```
-✔ This is useful for quickly scanning commit history.
-
----
-
-## **✅ 3. Show All Commits with Graph (Branch View)**
-```sh
-git log --oneline --graph --decorate --all
-```
-✔ This shows a **visual representation** of branches and commits.
-
----
-
-## **✅ 4. Show Commits by a Specific Author**
-```sh
-git log --author="Your Name"
-```
-✔ This filters commits by a specific **author**.
-
----
-
-## **✅ 5. Show Changes in Each Commit**
-```sh
-git log -p
-```
-✔ This **shows file changes** in each commit.
-
----
-
-## **✅ 6. See All Commits Across All Branches**
-```sh
-git log --all --oneline --graph --decorate
-```
-✔ Useful for viewing **entire project history**.
-
----
-
-## **✅ 7. Show Commit History for a Specific File**
-```sh
-git log -- filename.txt
-```
-✔ This shows changes made **only to that file**.
-
----
-
-## **✅ 8. Show the Latest N Commits**
-```sh
-git log -n 5
-```
-✔ This **limits** the log to the last 5 commits.
-
----
-
-## **🔹 Summary**
-| Command | Description |
-|---------|-------------|
-| `git log` | Show full commit history |
-| `git log --oneline` | Show short one-line commits |
-| `git log --graph --decorate --all` | Show a visual graph of commits |
-| `git log --author="Your Name"` | Show commits by a specific author |
-| `git log -p` | Show detailed changes in each commit |
-| `git log -- filename.txt` | Show commit history for a file |
-| `git log -n 5` | Show last 5 commits |
-
-Let me know if you need more details! 🚀😊
-
-
+This version includes all missing commands and is formatted for clarity. Let me know if you need any modifications! 🚀
